@@ -95,13 +95,23 @@
 
             // Always show install button on Chrome/Edge/iOS
             if (fab) fab.style.display = 'flex';
+            
             window.addEventListener('beforeinstallprompt', (e) => {
+                console.log('✅ PWA Install prompt ready - app can be installed as standalone');
                 e.preventDefault();
                 deferredPrompt = e;
                 banner.style.display = 'block';
                 if (fab) fab.style.display = 'flex';
                 if (iosTip) iosTip.style.display = 'none';
             });
+            
+            // Debug: Check if service worker registered
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistration().then(reg => {
+                    if (reg) console.log('✅ Service Worker active - PWA ready');
+                    else console.log('❌ Service Worker not registered');
+                });
+            }
 
             // Always show install button on iOS Safari
             const iosTip = document.getElementById('ios-tip');
