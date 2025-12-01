@@ -369,28 +369,122 @@ const affirmationData = [
 ];
 
 // --- LOGIC: The Resonance Engine ("AI") ---
-const generateResonanceResponse = (text) => {
-  const t = text.toLowerCase();
-  
-  if (t.includes('tired') || t.includes('exhausted') || t.includes('burnout') || t.includes('drain') || t.includes('sleep')) {
-    return "The alchemist knows that fire cannot burn without air. Your fatigue is a request for silence. Rest is not a pause in your purpose, but a vital part of its rhythm. Let the forge cool tonight.";
-  }
-  if (t.includes('anxious') || t.includes('scared') || t.includes('fear') || t.includes('worry') || t.includes('nervous') || t.includes('panic')) {
-    return "Anxiety is often just energy vibrating without a container. Do not fight the shaking. Give it structure. Breathe deeply, and remember: chaos is fertile if you do not let it drown you.";
-  }
-  if (t.includes('sad') || t.includes('cry') || t.includes('hurt') || t.includes('pain') || t.includes('grief') || t.includes('lonely')) {
-    return "Water does not batter stone; it embraces it. Allow this feeling to flow through you like a tide. It is cleaning the channel. You are not broken; you are deepening.";
-  }
-  if (t.includes('happy') || t.includes('joy') || t.includes('excited') || t.includes('great') || t.includes('love') || t.includes('good')) {
-    return "You have found the eigenfrequency. This joy is a standing wave—let it resonate. Amplify this feeling by sharing it with just one other person today. The signal strengthens when shared.";
-  }
-  if (t.includes('confused') || t.includes('lost') || t.includes('stuck') || t.includes('unsure') || t.includes('doubt')) {
-    return "Fog is merely a cloud touching the earth. It does not mean the path is gone, only that you must walk slower. Trust your internal compass over your eyes right now. The clarity will return.";
-  }
-  if (t.includes('angry') || t.includes('mad') || t.includes('frustrated') || t.includes('hate') || t.includes('furious')) {
-    return "Heat is useful, but only when directed. Ignis (fire) without containment destroys. Use this energy to forge something new, rather than burning what is already there. Channel the flame.";
-  }
-  return "Your signal has been received. The universe is listening. Continue to refine your frequency, and the noise will fall away. You are exactly where you need to be.";
+const elementTone = {
+  Ignis: {
+    prefix: "Ignis •",
+    frames: [
+      "Direct your heat with kindness.",
+      "Let discipline be the crucible for your fire.",
+      "Contain the flame; make it useful.",
+    ],
+  },
+  Aqua: {
+    prefix: "Aqua •",
+    frames: [
+      "Allow this to move through you without resistance.",
+      "Breathe slow; soften the edges and flow.",
+      "Gentleness is stronger than force.",
+    ],
+  },
+  Terra: {
+    prefix: "Terra •",
+    frames: [
+      "Return to structure, routine, and basics.",
+      "Stand firm; small rituals build cathedrals.",
+      "Stability invites clarity.",
+    ],
+  },
+  Aer: {
+    prefix: "Aer •",
+    frames: [
+      "Change your language; adjust your climate.",
+      "Speak softly and your world softens.",
+      "Let your tone be the wind that carries meaning.",
+    ],
+  },
+  Aether: {
+    prefix: "Aether •",
+    frames: [
+      "Listen for the subtle harmony beneath events.",
+      "Trust the invisible architecture holding you.",
+      "You are part of a larger resonance.",
+    ],
+  },
+};
+
+const keywordBuckets = [
+  {
+    keys: ['tired','exhausted','burnout','drained','sleepy','fatigue'],
+    messages: [
+      "Your fatigue is wisdom asking for rest. Cooling the forge preserves the metal.",
+      "Pause is not failure; it is fuel. Honor the need to recover.",
+      "Slow down. Depth grows in silence and sleep.",
+    ],
+  },
+  {
+    keys: ['anxious','scared','fear','worry','nervous','panic','overwhelmed'],
+    messages: [
+      "Anxiety is energy without a container. Shape it with breath and simple actions.",
+      "Name one thing you control right now; do that gently.",
+      "Bring attention to your breath. Rhythm turns chaos into music.",
+    ],
+  },
+  {
+    keys: ['sad','cry','hurt','pain','grief','lonely','down'],
+    messages: [
+      "Let the feeling flow. Water cleans the channel; you deepen, not break.",
+      "Grief is love with nowhere to go—give it a quiet room and time.",
+      "Hold yourself with tenderness. Depth is forming within you.",
+    ],
+  },
+  {
+    keys: ['happy','joy','excited','great','love','good','grateful'],
+    messages: [
+      "Amplify this standing wave by sharing it with one person today.",
+      "Anchor joy in a small ritual so it returns.",
+      "Let gratitude tune your instrument for the day.",
+    ],
+  },
+  {
+    keys: ['confused','lost','stuck','unsure','doubt','fog','uncertain'],
+    messages: [
+      "Fog asks you to walk slower. Trust your inner compass; sight will follow.",
+      "Choose the next kind micro-step—not the whole map.",
+      "Clarity grows from movement. Begin with one simple action.",
+    ],
+  },
+  {
+    keys: ['angry','mad','frustrated','hate','furious','irritated'],
+    messages: [
+      "Channel the heat into useful work. Fire without form only burns.",
+      "Transmute frustration into focus—pick one task and finish it.",
+      "Direct the flame toward creation, not destruction.",
+    ],
+  },
+];
+
+// Deterministic pick to avoid repeating the exact same line every time
+const pickBySeed = (arr, seed) => arr[seed % arr.length];
+
+const generateResonanceResponse = (text, context) => {
+  const t = (text || '').toLowerCase();
+  const element = context?.element || 'Aether';
+  const day = context?.day || 1;
+
+  // Find matching bucket
+  const bucket = keywordBuckets.find(b => b.keys.some(k => t.includes(k)));
+  const baseMsg = bucket
+    ? pickBySeed(bucket.messages, day)
+    : pickBySeed([
+        "Your signal has been received. Keep refining your frequency; the noise will fall away.",
+        "You are aligned more than you think. Stay gentle and consistent.",
+        "Small honest steps create lasting resonance. Begin now.",
+      ], day);
+
+  const tone = elementTone[element] || elementTone.Aether;
+  const toneMsg = pickBySeed(tone.frames, day);
+
+  return `${tone.prefix} ${baseMsg} ${toneMsg}`;
 };
 
 // --- COMPONENTS ---
@@ -479,7 +573,7 @@ const JournalModal = ({ isOpen, onClose, day, title }) => {
     setIsTyping(true);
 
     setTimeout(() => {
-      const response = generateResonanceResponse(entry);
+      const response = generateResonanceResponse(entry, { element: affirmationData.find(d => d.day === day)?.element, day });
       setCurrentResponse(response);
       setIsTyping(false);
 
