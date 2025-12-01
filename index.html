@@ -6,9 +6,9 @@
     <title>Resonance Pro - Daily Affirmations</title>
     <meta name="description" content="A 30-day journey of daily affirmations and personal reflection based on The Architecture of Resonance. Transform your life through mindful practice.">
     <meta name="theme-color" content="#050515" />
-    <link rel="manifest" href="/Daily-Affirmations-app/manifest.json" />
+    <link rel="manifest" href="./manifest.json" />
     <!-- iOS PWA icon and meta -->
-    <link rel="apple-touch-icon" href="/Daily-Affirmations-app/aurilux-coin-192.png" />
+    <link rel="apple-touch-icon" href="./aurilux-coin-192.png" />
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -43,7 +43,7 @@
             padding: 0; overflow: hidden; justify-content: center; align-items: center;
             transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;
         " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-            <img src="/Daily-Affirmations-app/aurilux-coin-192.png" alt="Install" style="width: 100%; height: 100%; object-fit: cover; border-radius: 14px;">
+            <img src="./aurilux-coin-192.png" alt="Install" style="width: 100%; height: 100%; object-fit: cover; border-radius: 14px;">
         </button>
         <div id="ios-tip" style="
             position: fixed; left: 0; right: 0; bottom: 80px; z-index: 9998;
@@ -69,13 +69,11 @@
             </div>
         </div>
 
-    <script type="text/babel" src="/Daily-Affirmations-app/app.js"></script>
-
-        <script>
+        <script type="text/babel" src="./app.js"></script>        <script>
             // Register service worker
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
-                      navigator.serviceWorker.register('/Daily-Affirmations-app/sw.js');
+                      navigator.serviceWorker.register('./sw.js', { scope: './' });
                 });
             }
 

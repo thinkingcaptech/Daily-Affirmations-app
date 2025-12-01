@@ -1,11 +1,12 @@
-const CACHE_NAME = 'resonance-cache-v1';
+const CACHE_NAME = 'resonance-cache-v2';
 const ASSETS = [
-  '/Daily-Affirmations-app/index.html',
-  '/Daily-Affirmations-app/app.js',
-  '/Daily-Affirmations-app/styles.css',
-  '/Daily-Affirmations-app/manifest.json',
-  '/Daily-Affirmations-app/aurilux-coin-192.png',
-  '/Daily-Affirmations-app/aurilux-coin-512.png'
+  './',
+  './index.html',
+  './app.js',
+  './styles.css',
+  './manifest.json',
+  './aurilux-coin-192.png',
+  './aurilux-coin-512.png'
 ];
 
 self.addEventListener('install', (event) => {
