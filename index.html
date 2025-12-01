@@ -39,8 +39,16 @@
             display: none; width: 44px; height: 44px; border-radius: 999px;
             background: linear-gradient(90deg,#FFD700,#FDB931); color: #000;
             font-weight: 700; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            font-size: 28px; justify-content: center; align-items: center; display: flex;
         ">+
         </button>
+        <div id="ios-tip" style="
+            position: fixed; left: 0; right: 0; bottom: 80px; z-index: 9998;
+            display: none; padding: 12px; background: #222; color: #FFD700; text-align: center;
+            font-size: 15px; border-radius: 12px; margin: 0 16px;
+        ">
+            <b>iOS:</b> Tap <span style="background:#FFD700;color:#222;padding:2px 6px;border-radius:6px;">Share</span> &rarr; <b>Add to Home Screen</b> to install this app.
+        </div>
 
         <!-- A2HS Banner -->
         <div id="install-banner" style="
@@ -75,13 +83,29 @@
             const dismiss = document.getElementById('install-dismiss');
             const fab = document.getElementById('install-fab');
 
+            function isIOS() {
+                return /iphone|ipad|ipod/i.test(navigator.userAgent);
+            }
+            function isSafari() {
+                return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+            }
+
+            // Always show install button on Chrome/Edge/iOS
+            if (fab) fab.style.display = 'flex';
             window.addEventListener('beforeinstallprompt', (e) => {
                 e.preventDefault();
                 deferredPrompt = e;
-                // Show both banner and floating button to make install explicit
                 banner.style.display = 'block';
-                if (fab) fab.style.display = 'block';
+                if (fab) fab.style.display = 'flex';
+                if (iosTip) iosTip.style.display = 'none';
             });
+
+            // Always show install button on iOS Safari
+            const iosTip = document.getElementById('ios-tip');
+            if (isIOS() && isSafari()) {
+                if (fab) fab.style.display = 'flex';
+                if (iosTip) iosTip.style.display = 'block';
+            }
 
             btn && btn.addEventListener('click', async () => {
                 if (!deferredPrompt) return;
@@ -98,16 +122,21 @@
 
             // Floating button click
             fab && fab.addEventListener('click', async () => {
-                if (!deferredPrompt) {
-                    // Fallback instructions if event not available (e.g., iOS Safari)
-                    alert('To install: On iPhone/iPad, use Share → Add to Home Screen. On desktop, use the browser menu → Install app.');
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    deferredPrompt = null;
+                    banner.style.display = 'none';
+                    fab.style.display = 'none';
                     return;
                 }
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                deferredPrompt = null;
-                banner.style.display = 'none';
-                fab.style.display = 'none';
+                // Fallback for Chrome/Edge/iOS
+                if (isIOS() && isSafari()) {
+                    iosTip.style.display = 'block';
+                    setTimeout(() => { iosTip.style.display = 'none'; }, 7000);
+                    return;
+                }
+                alert('To install: On Chrome/Edge, use browser menu → Install app. On iPhone/iPad, use Share → Add to Home Screen.');
             });
 
             // Hide UI if already installed
