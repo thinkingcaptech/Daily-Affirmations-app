@@ -133,29 +133,27 @@
                 banner.style.display = 'none';
             });
 
-            // Floating button click
+            // Floating button click - show contact info
             fab && fab.addEventListener('click', async () => {
                 if (deferredPrompt) {
                     deferredPrompt.prompt();
                     const { outcome } = await deferredPrompt.userChoice;
                     deferredPrompt = null;
                     banner.style.display = 'none';
-                    fab.style.display = 'none';
+                    // Keep button visible after install
                     return;
                 }
-                // Fallback for Chrome/Edge/iOS
-                if (isIOS() && isSafari()) {
-                    iosTip.style.display = 'block';
-                    setTimeout(() => { iosTip.style.display = 'none'; }, 7000);
-                    return;
+                // Show contact information with clickable link
+                const userChoice = confirm('💡 Interested in a custom app for your company or personal use?\n\n📧 Email: will@tctcusa.com\n\n🔗 Click OK to visit my LinkTree, or Cancel to close.');
+                if (userChoice) {
+                    window.open('https://linktr.ee/willjohnson22', '_blank');
                 }
-                alert('To install: On Chrome/Edge, use browser menu → Install app. On iPhone/iPad, use Share → Add to Home Screen.');
             });
 
-            // Hide UI if already installed
+            // Hide banner if already installed, but keep contact button
             window.addEventListener('appinstalled', () => {
                 banner.style.display = 'none';
-                if (fab) fab.style.display = 'none';
+                // Keep fab button visible for contact info
             });
         </script>
 </body>
