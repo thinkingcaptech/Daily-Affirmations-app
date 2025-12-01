@@ -2,12 +2,15 @@
   "name": "Resonance Pro - Daily Affirmations",
   "short_name": "Resonance",
   "description": "A free 30-day journey of transformative daily affirmations and mindful journaling.",
-  "start_url": "/Daily-Affirmations-app/index.html",
+  "start_url": "/Daily-Affirmations-app/",
   "scope": "/Daily-Affirmations-app/",
   "display": "standalone",
   "background_color": "#050515",
   "theme_color": "#050515",
   "orientation": "portrait",
+  "categories": ["lifestyle", "health"],
+  "lang": "en-US",
+  "dir": "ltr",
   "icons": [
     {
       "src": "/Daily-Affirmations-app/aurilux-coin-192.png",
