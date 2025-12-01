@@ -33,14 +33,17 @@
 <body>
     <div id="root"></div>
     
-        <!-- Install (A2HS) floating button -->
-        <button id="install-fab" title="Install app" style="
+        <!-- Install (A2HS) button with icon -->
+        <button id="install-fab" title="Install Resonance" style="
             position: fixed; right: 16px; bottom: 80px; z-index: 9999;
-            display: none; width: 44px; height: 44px; border-radius: 999px;
-            background: linear-gradient(90deg,#FFD700,#FDB931); color: #000;
-            font-weight: 700; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-            font-size: 28px; justify-content: center; align-items: center; display: flex;
-        ">+
+            display: flex; width: 56px; height: 56px; border-radius: 16px;
+            background: linear-gradient(135deg,#FFD700,#FDB931); 
+            border: 2px solid rgba(255,255,255,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3), 0 0 20px rgba(255,215,0,0.2);
+            padding: 0; overflow: hidden; justify-content: center; align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;
+        " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+            <img src="/Daily-Affirmations-app/aurilux-coin-192.png" alt="Install" style="width: 100%; height: 100%; object-fit: cover; border-radius: 14px;">
         </button>
         <div id="ios-tip" style="
             position: fixed; left: 0; right: 0; bottom: 80px; z-index: 9998;
