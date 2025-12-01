@@ -6,7 +6,7 @@
     <title>Resonance Pro - Daily Affirmations</title>
     <meta name="description" content="A 30-day journey of daily affirmations and personal reflection based on The Architecture of Resonance. Transform your life through mindful practice.">
     <meta name="theme-color" content="#050515" />
-    <link rel="manifest" href="manifest.json" />
+    <link rel="manifest" href="/Daily-Affirmations-app/manifest.json" />
     <!-- iOS PWA icon and meta -->
     <link rel="apple-touch-icon" href="aurilux-coin-192.png" />
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -33,6 +33,15 @@
 <body>
     <div id="root"></div>
     
+        <!-- Install (A2HS) floating button -->
+        <button id="install-fab" title="Install app" style="
+            position: fixed; right: 16px; bottom: 80px; z-index: 9999;
+            display: none; width: 44px; height: 44px; border-radius: 999px;
+            background: linear-gradient(90deg,#FFD700,#FDB931); color: #000;
+            font-weight: 700; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+        ">+
+        </button>
+
         <!-- A2HS Banner -->
         <div id="install-banner" style="
             position: fixed; left: 0; right: 0; bottom: 0; z-index: 9999;
@@ -49,13 +58,13 @@
             </div>
         </div>
 
-    <script type="text/babel" src="app.js"></script>
+    <script type="text/babel" src="/Daily-Affirmations-app/app.js"></script>
 
         <script>
             // Register service worker
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('./sw.js');
+                      navigator.serviceWorker.register('/Daily-Affirmations-app/sw.js');
                 });
             }
 
@@ -64,11 +73,14 @@
             const banner = document.getElementById('install-banner');
             const btn = document.getElementById('install-button');
             const dismiss = document.getElementById('install-dismiss');
+            const fab = document.getElementById('install-fab');
 
             window.addEventListener('beforeinstallprompt', (e) => {
                 e.preventDefault();
                 deferredPrompt = e;
+                // Show both banner and floating button to make install explicit
                 banner.style.display = 'block';
+                if (fab) fab.style.display = 'block';
             });
 
             btn && btn.addEventListener('click', async () => {
@@ -77,10 +89,31 @@
                 const { outcome } = await deferredPrompt.userChoice;
                 deferredPrompt = null;
                 banner.style.display = 'none';
+                if (fab) fab.style.display = 'none';
             });
 
             dismiss && dismiss.addEventListener('click', () => {
                 banner.style.display = 'none';
+            });
+
+            // Floating button click
+            fab && fab.addEventListener('click', async () => {
+                if (!deferredPrompt) {
+                    // Fallback instructions if event not available (e.g., iOS Safari)
+                    alert('To install: On iPhone/iPad, use Share → Add to Home Screen. On desktop, use the browser menu → Install app.');
+                    return;
+                }
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                banner.style.display = 'none';
+                fab.style.display = 'none';
+            });
+
+            // Hide UI if already installed
+            window.addEventListener('appinstalled', () => {
+                banner.style.display = 'none';
+                if (fab) fab.style.display = 'none';
             });
         </script>
 </body>
