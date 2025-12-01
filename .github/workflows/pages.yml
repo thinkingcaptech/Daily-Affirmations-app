@@ -1,0 +1,56 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node (for Tailwind CDN compatibility)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Prepare artifact
+        run: |
+          mkdir -p dist
+          cp index.html dist/index.html
+          cp app.js dist/app.js
+          cp styles.css dist/styles.css || true
+          cp manifest.json dist/manifest.json || true
+          cp sw.js dist/sw.js || true
+          cp aurilux-coin-192.png dist/aurilux-coin-192.png || true
+          cp aurilux-coin-512.png dist/aurilux-coin-512.png || true
+          cp -r icons dist/icons || true
+          cp README.md dist/README.md || true
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
